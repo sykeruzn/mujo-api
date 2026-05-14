@@ -11,7 +11,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",           # Vite dev server
-        "https://your-mujo-app.vercel.app", # replace with your Vercel frontend URL
+        "https://mujo-app.vercel.app", # replace with your Vercel frontend URL
     ],
     allow_credentials=True,
     allow_methods=["*"],
