@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from datetime import date
+import calendar
+
 from api.auth import verify_token
 from api.services.supabase_client import get_supabase
 
@@ -22,6 +24,9 @@ async def get_habits(user_id: str = Depends(verify_token)):
 @router.get("/completions")
 async def get_completions(year: int, month: int, user_id: str = Depends(verify_token)):
     """Return all completions for a given month (YYYY-MM)."""
+    # Dynamically get the last day of the requested month
+    _, last_day = calendar.monthrange(year, month)
+
     month_str = f"{year}-{month:02d}"
     db = get_supabase()
     result = (
@@ -29,7 +34,7 @@ async def get_completions(year: int, month: int, user_id: str = Depends(verify_t
         .select("habit_id, date")
         .eq("user_id", user_id)
         .gte("date", f"{month_str}-01")
-        .lte("date", f"{month_str}-31")
+        .lte("date", f"{month_str}-{last_day}") # <-- 3. Pass the dynamic last_day here
         .execute()
     )
     return result.data
